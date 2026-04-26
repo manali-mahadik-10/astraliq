@@ -1,122 +1,119 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { DataProvider } from './context/DataContext';
+// Auth
+import Landing from './pages/auth/Landing';
+import AmbassadorLogin from './pages/auth/AmbassadorLogin';
+import AdminLogin from './pages/auth/AdminLogin';
+import Onboarding from './pages/auth/Onboarding';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Ambassador
+import AmbassadorDashboard from './pages/ambassador/AmbassadorDashboard';
+import TaskCenter from './pages/ambassador/TaskCenter';
+import Leaderboard from './pages/ambassador/Leaderboard';
+import BadgeCollection from './pages/ambassador/BadgeCollection';
+import AmbassadorProfile from './pages/ambassador/AmbassadorProfile';
+import RewardsStore from './pages/ambassador/RewardsStore';
+import AICoach from './pages/ambassador/AICoach';
 
+// Admin
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AmbassadorManagement from './pages/admin/AmbassadorManagement';
+import TaskManagement from './pages/admin/TaskManagement';
+import Analytics from './pages/admin/Analytics';
+import AIInsights from './pages/admin/AIInsights';
+
+// Special
+import LiveDemo from './pages/special/LiveDemo';
+import LoadingTransition from './pages/special/LoadingTransition';
+import GitHubComparison from './pages/special/GitHubComparison';
+
+const ProtectedAmbassador = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/" />;
+  if (user.role !== 'ambassador') return <Navigate to="/" />;
+  return children;
+};
+
+const ProtectedAdmin = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/" />;
+  if (user.role !== 'admin') return <Navigate to="/" />;
+  return children;
+};
+
+function AppRoutes() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Routes>
+      {/* PUBLIC */}
+      <Route path="/" element={<Landing />} />
+      <Route path="/demo" element={<LiveDemo />} />
+      <Route path="/loading" element={<LoadingTransition />} />
+      <Route path="/github-comparison" element={<GitHubComparison />} />
 
-      <div className="ticks"></div>
+      {/* AUTH */}
+      <Route path="/ambassador/login" element={<AmbassadorLogin />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/onboarding" element={<Onboarding />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* AMBASSADOR - Protected */}
+      <Route path="/ambassador/dashboard" element={
+        <ProtectedAmbassador><AmbassadorDashboard /></ProtectedAmbassador>
+      } />
+      <Route path="/ambassador/tasks" element={
+        <ProtectedAmbassador><TaskCenter /></ProtectedAmbassador>
+      } />
+      <Route path="/ambassador/leaderboard" element={
+        <ProtectedAmbassador><Leaderboard /></ProtectedAmbassador>
+      } />
+      <Route path="/ambassador/badges" element={
+        <ProtectedAmbassador><BadgeCollection /></ProtectedAmbassador>
+      } />
+      <Route path="/ambassador/profile" element={
+        <ProtectedAmbassador><AmbassadorProfile /></ProtectedAmbassador>
+      } />
+      <Route path="/ambassador/rewards" element={
+        <ProtectedAmbassador><RewardsStore /></ProtectedAmbassador>
+      } />
+      <Route path="/ambassador/ai-coach" element={
+        <ProtectedAmbassador><AICoach /></ProtectedAmbassador>
+      } />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* ADMIN - Protected */}
+      <Route path="/admin/dashboard" element={
+        <ProtectedAdmin><AdminDashboard /></ProtectedAdmin>
+      } />
+      <Route path="/admin/ambassadors" element={
+        <ProtectedAdmin><AmbassadorManagement /></ProtectedAdmin>
+      } />
+      <Route path="/admin/tasks" element={
+        <ProtectedAdmin><TaskManagement /></ProtectedAdmin>
+      } />
+      <Route path="/admin/analytics" element={
+        <ProtectedAdmin><Analytics /></ProtectedAdmin>
+      } />
+      <Route path="/admin/ai-insights" element={
+        <ProtectedAdmin><AIInsights /></ProtectedAdmin>
+      } />
+
+      {/* Catch all */}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
 }
 
-export default App
+
+
+function App() {
+  return (
+    <AuthProvider>
+      <DataProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </DataProvider>
+    </AuthProvider>
+  );
+}
+
+export default App;
